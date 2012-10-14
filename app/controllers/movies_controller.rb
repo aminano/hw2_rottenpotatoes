@@ -8,15 +8,17 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.find_ratings
-    @sortby = params[:sort]
-    if params[:sort].nil? && params[:ratings].nil?
+#    @sortby = params[:sort]
+    session[:current_sort] == params[:sort] ? "": session[:current_sort] = params[:sort] unless params[:sort].nil?
+    session[:current_ratings] == params[:ratings] ? "": session[:current_ratings] = params[:ratings] unless params[:ratings].nil?
+    if session[:current_sort].nil? && session[:current_ratings].nil?
       @movies = Movie.find(:all)
-    elsif !params[:sort].nil? && params[:ratings].nil?
-      @movies = Movie.order(params[:sort]).find(:all)
-    elsif params[:sort].nil? && !params[:ratings].nil?
-      @movies = Movie.find(:all, :conditions => { :rating => params[:ratings].keys} )
+    elsif !session[:current_sort].nil? && session[:current_ratings].nil?
+      @movies = Movie.order(session[:current_sort]).find(:all)
+    elsif session[:current_sort].nil? && !session[:current_ratings].nil?
+      @movies = Movie.find(:all, :conditions => { :rating => session[:current_ratings].keys} )
     else
-      @movies = Movie.order(params[:sort]).find(:all, :conditions => { :rating => params[:ratings].keys})
+      @movies = Movie.order(session[:current_sort]).find(:all, :conditions => { :rating => session[:current_ratings].keys})
     end
   end
 
