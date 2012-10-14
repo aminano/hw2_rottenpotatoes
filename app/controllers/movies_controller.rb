@@ -9,10 +9,14 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.find_ratings
     @sortby = params[:sort]
-    if !params[:ratings].nil?
-      @movies = Movie.order(params[:sort]).find(:all, :conditions => { :rating => params[:ratings].keys})
-    else
+    if params[:sort].nil? && params[:ratings].nil?
       @movies = Movie.find(:all)
+    elsif !params[:sort].nil? && params[:ratings].nil?
+      @movies = Movie.order(params[:sort]).find(:all)
+    elsif params[:sort].nil? && !params[:ratings].nil?
+      @movies = Movie.find(:all, :conditions => { :rating => params[:ratings].keys} )
+    else
+      @movies = Movie.order(params[:sort]).find(:all, :conditions => { :rating => params[:ratings].keys})
     end
   end
 
