@@ -12,7 +12,7 @@ class MoviesController < ApplicationController
     if !params[:ratings].nil?
       @movies = Movie.order(params[:sort]).find(:all, :conditions => { :rating => params[:ratings].keys})
     else
-      @movies = Movie.order(params[:sort]).find(:all)
+      @movies = Movie.find(:all)
     end
   end
 
