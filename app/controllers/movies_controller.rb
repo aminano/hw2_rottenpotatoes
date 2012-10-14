@@ -7,8 +7,13 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.find_ratings
     @sortby = params[:sort]
-    @movies = Movie.order(params[:sort]).all
+    if !params[:ratings].nil?
+      @movies = Movie.order(params[:sort]).find(:all, :conditions => { :rating => params[:ratings].keys})
+    else
+      @movies = Movie.order(params[:sort]).find(:all)
+    end
   end
 
   def new
