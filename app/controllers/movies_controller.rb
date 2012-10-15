@@ -12,7 +12,8 @@ class MoviesController < ApplicationController
     session[:current_sort] == params[:sort] ? "": session[:current_sort] = params[:sort] unless params[:sort].nil?
     session[:current_ratings] == params[:ratings] ? "": session[:current_ratings] = params[:ratings] unless params[:ratings].nil?
     if session[:current_sort].nil? && session[:current_ratings].nil?
-      @movies = Movie.find(:all)
+#@movies = Movie.find(:all)
+      redirect_to movies_path :ratings => {"G"=>"1", "PG"=>"1", "PG-13"=>"1", "R"=>"1", "NC-17"=>"1"}
     elsif !session[:current_sort].nil? && session[:current_ratings].nil?
       @movies = Movie.order(session[:current_sort]).find(:all)
     elsif session[:current_sort].nil? && !session[:current_ratings].nil?
