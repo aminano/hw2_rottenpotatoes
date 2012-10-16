@@ -8,18 +8,35 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.find_ratings
-#    @sortby = params[:sort]
-    session[:current_sort] == params[:sort] ? "": session[:current_sort] = params[:sort] unless params[:sort].nil?
-    session[:current_ratings] == params[:ratings] ? "": session[:current_ratings] = params[:ratings] unless params[:ratings].nil?
-    if session[:current_sort].nil? && session[:current_ratings].nil?
-#@movies = Movie.find(:all)
-      redirect_to movies_path :ratings => {"G"=>"1", "PG"=>"1", "PG-13"=>"1", "R"=>"1", "NC-17"=>"1"}
-    elsif !session[:current_sort].nil? && session[:current_ratings].nil?
-      @movies = Movie.order(session[:current_sort]).find(:all)
-    elsif session[:current_sort].nil? && !session[:current_ratings].nil?
-      @movies = Movie.find(:all, :conditions => { :rating => session[:current_ratings].keys} )
+    @ratings_checked = @all_ratings.dup
+
+    if !params[:sort].nil?
+      session[:current_sort] = params[:sort]
     else
-      @movies = Movie.order(session[:current_sort]).find(:all, :conditions => { :rating => session[:current_ratings].keys})
+      if !session[:current_sort].nil?
+        redirect_to :ratings => params[:ratings], :sort => session[:current_sort]
+        return
+      end
+    end
+
+    if !params[:ratings].nil? || !params[:commit].nil?
+      @ratings_checked = params[:ratings].keys unless params[:ratings].nil?
+      session[:current_ratings] = params[:ratings] unless params[:ratings].nil?
+    else
+     if !session[:current_ratings].nil?
+        redirect_to :ratings => session[:current_ratings], :sort => params[:sort]
+        return
+      end
+    end
+
+    if !session[:current_sort].nil?
+       @movies = Movie.order(session[:current_sort]).find(:all, :conditions => {:rating => @ratings_checked})
+    else
+       @movies = Movie.find(:all, :conditions => {:rating => @ratings_checked})
+    end
+
+    if session[:current_sort].nil? && session[:current_ratings].nil?
+      @movies = Movie.find(:all)
     end
   end
 
